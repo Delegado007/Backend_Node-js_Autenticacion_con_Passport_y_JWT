@@ -1,5 +1,5 @@
 const { Model, DataTypes, Sequelize } = require('sequelize');
-const { USER_TABLE } = require('./userModel');
+const { CUSTOMER_TABLE } = require('./customerModel');
 
 const ORDER_TABLE = 'orders';
 
@@ -10,12 +10,12 @@ const OrderSchema = {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
-  userId: {
-    field: 'user_id',
+  customerId: {
+    field: 'customer_id',
     allowNull: false,
     type: DataTypes.INTEGER,
     references: {
-      model: USER_TABLE,
+      model: CUSTOMER_TABLE,
       key: 'id'
     },
     onUpdate: 'CASCADE',
@@ -44,11 +44,14 @@ const OrderSchema = {
 class Order extends Model {
 
   static associate(models) {
-    this.belongsToMany(models.File, {
-      as: 'files',
-      through: models.OrderFile,
+    this.belongsTo(models.Customer, {
+      as: 'customer',
+    });
+    this.belongsToMany(models.Product, {
+      as: 'items',
+      through: models.OrderProduct,
       foreignKey: 'orderId',
-      otherKey: 'fileId'
+      otherKey: 'productId'
     });
   }
 

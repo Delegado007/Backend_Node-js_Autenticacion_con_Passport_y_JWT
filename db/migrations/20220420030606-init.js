@@ -1,10 +1,11 @@
 'use strict';
 
 const { USER_TABLE } = require('./../models/userModel');
+const { CUSTOMER_TABLE } = require('./../models/customerModel');
 const { CATEGORY_TABLE } = require('./../models/categoryModel');
-const { FILE_TABLE } = require('./../models/fileModel');
+const { PRODUCT_TABLE } = require('./../models/productModel');
 const { ORDER_TABLE } = require('./../models/orderModel');
-const { ORDER_FILE_TABLE } = require('./../models/order-fileModel');
+const { ORDER_PRODUCT_TABLE } = require('./../models/order-productModel');
 
 
 module.exports = {
@@ -25,11 +26,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DataTypes.STRING
       },
-      recoveryToken: {
-        field: 'recovery_token',
-        allowNull: true,
-        type: Sequelize.DataTypes.STRING
-      },
       role: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
@@ -42,7 +38,45 @@ module.exports = {
         defaultValue: Sequelize.NOW
       }
     });
-
+    await queryInterface.createTable(CUSTOMER_TABLE, {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.DataTypes.INTEGER
+      },
+      name: {
+        allowNull: false,
+        type: Sequelize.DataTypes.STRING,
+      },
+      lastName: {
+        allowNull: false,
+        type: Sequelize.DataTypes.STRING,
+        field: 'last_name',
+      },
+      phone: {
+        allowNull: true,
+        type: Sequelize.DataTypes.STRING,
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DataTypes.DATE,
+        field: 'created_at',
+        defaultValue: Sequelize.NOW,
+      },
+      userId: {
+        field: 'user_id',
+        allowNull: false,
+        type: Sequelize.DataTypes.INTEGER,
+        unique: true,
+        references: {
+          model: USER_TABLE,
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      }
+    });
     await queryInterface.createTable(CATEGORY_TABLE, {
       id: {
         allowNull: false,
@@ -55,6 +89,10 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
+      image: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
@@ -62,8 +100,7 @@ module.exports = {
         defaultValue: Sequelize.NOW,
       },
     });
-
-    await queryInterface.createTable(FILE_TABLE, {
+    await queryInterface.createTable(PRODUCT_TABLE, {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -76,9 +113,13 @@ module.exports = {
       },
       image: {
         type: Sequelize.DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      pages: {
+      description: {
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: false,
+      },
+      price: {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
       },
@@ -100,7 +141,6 @@ module.exports = {
         onDelete: 'SET NULL'
       }
     });
-
     await queryInterface.createTable(ORDER_TABLE, {
       id: {
         allowNull: false,
@@ -108,12 +148,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER
       },
-      userId: {
-        field: 'user_id',
+      customerId: {
+        field: 'customer_id',
         allowNull: false,
         type: Sequelize.DataTypes.INTEGER,
         references: {
-          model: USER_TABLE,
+          model: CUSTOMER_TABLE,
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -126,8 +166,7 @@ module.exports = {
         defaultValue: Sequelize.NOW,
       },
     });
-
-    await queryInterface.createTable(ORDER_FILE_TABLE, {
+    await queryInterface.createTable(ORDER_PRODUCT_TABLE, {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -155,12 +194,12 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      fileId: {
-        field: 'file_id',
+      productId: {
+        field: 'product_id',
         allowNull: false,
         type: Sequelize.DataTypes.INTEGER,
         references: {
-          model: FILE_TABLE,
+          model: PRODUCT_TABLE,
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -171,10 +210,11 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable(ORDER_FILE_TABLE);
+    await queryInterface.dropTable(ORDER_PRODUCT_TABLE);
     await queryInterface.dropTable(ORDER_TABLE);
-    await queryInterface.dropTable(FILE_TABLE);
+    await queryInterface.dropTable(PRODUCT_TABLE);
     await queryInterface.dropTable(CATEGORY_TABLE);
+    await queryInterface.dropTable(CUSTOMER_TABLE);
     await queryInterface.dropTable(USER_TABLE);
   }
 };

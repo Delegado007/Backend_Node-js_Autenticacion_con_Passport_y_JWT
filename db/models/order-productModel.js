@@ -1,11 +1,11 @@
 const { Model, DataTypes, Sequelize } = require('sequelize');
 
 const { ORDER_TABLE } = require('./orderModel');
-const { FILE_TABLE } = require('./fileModel');
+const { PRODUCT_TABLE } = require('./productModel');
 
-const ORDER_FILE_TABLE = 'orders_files';
+const ORDER_PRODUCT_TABLE = 'orders_products';
 
-const OrderFileSchema = {
+const OrderProductSchema = {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -33,12 +33,12 @@ const OrderFileSchema = {
     onUpdate: 'CASCADE',
     onDelete: 'SET NULL'
   },
-  fileId: {
-    field: 'file_id',
+  productId: {
+    field: 'product_id',
     allowNull: false,
     type: DataTypes.INTEGER,
     references: {
-      model: FILE_TABLE,
+      model: PRODUCT_TABLE,
       key: 'id'
     },
     onUpdate: 'CASCADE',
@@ -46,7 +46,7 @@ const OrderFileSchema = {
   }
 }
 
-class OrderFile extends Model {
+class OrderProduct extends Model {
 
   static associate(models) {
     //
@@ -55,11 +55,11 @@ class OrderFile extends Model {
   static config(sequelize) {
     return {
       sequelize,
-      tableName: ORDER_FILE_TABLE,
-      modelName: 'OrderFile',
+      tableName: ORDER_PRODUCT_TABLE,
+      modelName: 'OrderProduct',
       timestamps: false
     }
   }
 }
 
-module.exports = { OrderFile, OrderFileSchema, ORDER_FILE_TABLE };
+module.exports = { OrderProduct, OrderProductSchema, ORDER_PRODUCT_TABLE };

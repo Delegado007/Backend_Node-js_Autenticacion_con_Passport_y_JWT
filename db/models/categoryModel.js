@@ -14,6 +14,10 @@ const CategorySchema = {
     unique: true,
     allowNull: false,
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   createdAt: {
     allowNull: false,
     type: DataTypes.DATE,
@@ -26,8 +30,8 @@ const CategorySchema = {
 class Category extends Model {
 
   static associate(models) {
-    this.hasMany(models.File, {
-      as: 'files',
+    this.hasMany(models.Product, {
+      as: 'products',
       foreignKey: 'categoryId'
     });
   }
